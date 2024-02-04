@@ -1,22 +1,22 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import CssBaseline from '@mui/joy/CssBaseline';
 import { CssVarsProvider } from '@mui/joy/styles';
-import ContractsViewer from './components/ContractsViewer';
-import Chatbot from './components/Chatbot';
-import Box from '@mui/joy/Box';
-import Card from '@mui/joy/Card';
+import TenantView from './components/TenantView';
+import EntranceInterface from './components/EntranceInterface';
+import RenterUI from './components/RenterUI';
 
 function App() {
   return (
     <CssVarsProvider>
       <CssBaseline />
-      <Box sx={{ display: 'flex', height: '100vh' }}>
-        <Card sx={{ flex: 1, overflow: 'auto', marginRight: '0.5rem' }}>
-          <ContractsViewer />
-        </Card>
-        <Card sx={{ flex: 1, overflow: 'auto', marginLeft: '0.5rem' }}>
-          <Chatbot />
-        </Card>
-      </Box>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<EntranceInterface />} />
+          <Route path="/renter" element={<RenterUI />} />
+          <Route path="/tenantview" element={<TenantView />} /> {/* Add the route for PDFViewer */}
+          {/* Add additional routes as needed */}
+        </Routes>
+      </BrowserRouter>
     </CssVarsProvider>
   );
 }
