@@ -42,7 +42,7 @@ def get_summary(text_content):
     try:
         messages = [
             {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": f"Please summarize the following housing contract for me in 5 bullet points:\n\n{text_content}"}
+            {"role": "user", "content": f"Please summarize the following housing contract using five lines (some of them can be bulleted):\n\n{text_content}"}
         ]
         summary_response = client.chat.completions.create(model="gpt-4-0125-preview", messages=messages)
         summary = summary_response.choices[0].message.content
@@ -53,7 +53,7 @@ def get_summary(text_content):
 def get_answer(question, text_content):
     try:
         messages = [
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": "You are a helpful assistant helping students with their housing contracts."},
             {"role": "user", "content": f"Answer this question based on this housing contract in bullet points:\n\n{question}\n\nContext:\n{text_content}"}
         ]
         answer_response = client.chat.completions.create(model="gpt-4-0125-preview", messages=messages)
@@ -97,7 +97,7 @@ st.set_page_config(layout="wide")
 
 st.markdown("<h1 style='font-size:70px;'>RentRightly 🏠</h1>", unsafe_allow_html=True)
 
-col1, spacer, col2 = st.columns([5, 3, 5])
+col1, spacer, col2 = st.columns([5, 1, 5])
 
 
 with col1:
@@ -111,7 +111,7 @@ with col1:
         
         st.markdown(f"<h3 style='font-size:16px;'>Preview: {uploaded_file.name}</h3>", unsafe_allow_html=True)
         st.markdown(
-            f'<iframe src="data:application/pdf;base64,{base64.b64encode(uploaded_file.getvalue()).decode()}" width="120%" height="800" type="application/pdf"></iframe>',
+            f'<iframe src="data:application/pdf;base64,{base64.b64encode(uploaded_file.getvalue()).decode()}" width="100%" height="800" type="application/pdf"></iframe>',
             unsafe_allow_html=True,
         )
 
@@ -137,8 +137,6 @@ with col2:
     # Store the question in a variable
     question = st.text_input("Ask a question based on your housing contract:")
 
-
-    # Create a button to get the answer and check if a question is entered
     if st.button('Get Answer'):
             answer = get_answer(question, text_content)
             st.write(answer)
