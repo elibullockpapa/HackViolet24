@@ -2,33 +2,26 @@
 
 RentRightly is a platform designed to demystify housing contracts for tenants and landlords, ensuring clarity and mutual understanding for all parties involved.
 
-## Prerequisites
+Inspiration
+As college students, we have experienced how housing contracts can be very long, and it can take a long time to find the answer to a question like "will I be able to bring my pet?". That's why we created RentRightly - an interface for getting clarification about lease and rental agreements.
 
-- Node.js and npm (https://nodejs.org/)
+What it does
+For student renters - we use AI to help you summarize and chat with your contracts. Our Q&A interface can give you answers to specific questions about your contract For landlords - use AI to find blind spots in your contracts that require clarification and to keep track of who has viewed or signed them.
 
-## Quick Start
+How we built it
+We use Google Cloud vertex AI to convert our PDF documents into OCR text. Then, we use the Cloudflare AI worker agents and OpenAI GPT-4 to summarize the document and let you ask questions about it. We used streamlit as it provides an easy user interface to host and build AI tools.
 
-1. **Clone the repository:**
-    ```
-    git clone https://github.com/EliBP/HackViolet24
-    ```
+Challenges we ran into
+Getting cloudflare AI worker agents to run was tough because they depend on open-source models For the OpenAI we initially struggled with context window length since our documents are lengthy. we ultimately shifted to using the latest GPT-4 models.
 
-2. **Navigate to the project directory:**
-    ```
-    cd RentRightly
-    ```
+Accomplishments that we're proud of
+We were able to build all of this in less than 24 hours of ideation and our prototype actually works!
 
-3. **Install dependencies:**
-    ```
-    npm install
-    ```
+What we learned
+We learned about how to build and deploy streamlit apps, how to use Google Cloud APIs, and also the Cloudflare AI worker agents. We also, unfortunately, learned that getting a react web app interface for everything was too much to get fully functional in just 24 hours with our limited experience, so we resorted to Streamlit.
 
-4. **Run the development server:**
-    ```
-    npm run dev
-    ```
-
-After running the development server, the application will probably be available at `http://localhost:5713`.
+What's next for RentRightly
+We can build out our web app's functionality to bring it inline with our Streamlit application.
 
 ## License
 
