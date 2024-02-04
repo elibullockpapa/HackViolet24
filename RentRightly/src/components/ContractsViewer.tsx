@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import Tabs from '@mui/joy/Tabs';
 import TabList from '@mui/joy/TabList';
@@ -64,7 +64,7 @@ const ContractsViewer: React.FC = () => {
             <Tabs
                 aria-label="PDF tabs"
                 value={pdfFile}
-                onChange={(event, newValue) => {
+                onChange={(_event, newValue) => {
                     // Update the current PDF file based on tab selection
                     if (typeof newValue === 'string') {
                         setPdfFile(newValue);
@@ -93,7 +93,7 @@ const ContractsViewer: React.FC = () => {
                 {pdfFile && (
                     <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess} options={options}>
                         {/* Render a Page component for each page in the PDF */}
-                        {Array.from(new Array(numPages), (el, index) => (
+                        {Array.from(new Array(numPages), (_el, index) => (
                             <Page
                                 key={`page_${index + 1}`}
                                 pageNumber={index + 1}

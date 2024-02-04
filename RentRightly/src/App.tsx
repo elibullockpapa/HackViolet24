@@ -13,7 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<EntranceInterface />} />
           <Route path="/renter" element={<RenterUI />} />
-          <Route path="/tenantview" element={<TenantView />} /> {/* Add the route for PDFViewer */}
+          <Route path="/tenantview" element={<TenantView />} />
           {/* Add additional routes as needed */}
         </Routes>
       </BrowserRouter>
