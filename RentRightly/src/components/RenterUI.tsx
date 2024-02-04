@@ -44,7 +44,7 @@ function RenterUI() {
 
       {/* Tab Panel for Offers */}
       
-         <Box sx={{ position: 'absolute', top: '15%', left: '20%', transform: 'translateX(-50%)', p: 3 }}>
+         <Box sx={{ position: 'absolute', top: '15%', left: '15%', transform: 'translateX(-50%)', p: 3 }}>
           {/* Button for the Pending Offer */}
           <Sheet
             variant="outlined"
