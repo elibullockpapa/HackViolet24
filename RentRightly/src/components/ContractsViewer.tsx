@@ -24,7 +24,7 @@ const options = {
 const maxWidth = 800;
 
 // The main functional component for the PDF viewer with tabs
-const PDFViewerTabs: React.FC = () => {
+const ContractsViewer: React.FC = () => {
     // State for tracking the total number of pages in the loaded PDF
     const [numPages, setNumPages] = useState<number | null>(null);
 
@@ -107,4 +107,4 @@ const PDFViewerTabs: React.FC = () => {
     );
 };
 
-export default PDFViewerTabs;
+export default ContractsViewer;
