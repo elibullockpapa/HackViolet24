@@ -21,7 +21,7 @@ def get_document_text(encoded_content, access_token):
     })
 
     project_id = 'cwaipai'
-    access_token = 'ya29.a0AfB_byDmLmU8gHT5rSG5kKxuiYPnVzB1brd7paD5MN9IGcSumCtKurYI4BN-GWxOias1Mr7sdycpr_L0d08XnB29Yv40x9L6tlyr6j5I1e-dhGsSWTP89g8YuLpSTQap_G5h9OyZMBIPZYiY7k1jykQICqVU7NKoNYc8NWXu2p8aCgYKAegSARISFQHGX2Mi3QTccITOAQYLQbNvzqp_7w0178'
+    access_token = 'ya29.a0AfB_byCMfJtgZBFQBeJPqvJVJ0It6M0kcNjnSobVrBRPzeQsk0P0cIYusyYf1LpAPHKSWtPCetIpAJRM7xtk3W5Yjg7VdRsmgnfH4NUNm9uFieYOTk_da10xHlxkmJZGZnFc3MCQsc8EDjji4fvuDV6H4_MWunZzXozsaCgYKAfUSARISFQHGX2MiIkJlF0_2M3KG8uixXPdGDg0171'
     endpoint_url = f"https://us-documentai.googleapis.com/v1/projects/450368740110/locations/us/processors/44657797e61c9b6b:process"
     headers = {
         "Authorization": f"Bearer {access_token}",
@@ -60,7 +60,7 @@ def get_answer(question, text_content):
         for segment in segments:
             messages = [
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": f"Answer this question based on the text:\n\n{question}\n\nContext:\n{segment}"}
+                {"role": "user", "content": f"Answer this question based on this housing contract:\n\n{question}\n\nContext:\n{segment}"}
             ]
             answer_response = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
             answer = answer_response.choices[0].message.content
@@ -82,43 +82,56 @@ def segment_text(text, max_length):
         text = text[len(segment):].strip()
     return segments
 
-
+st.set_page_config(layout="wide")
 
 st.title('RentRightly')
 
-uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
-text_content = ""  # Initialize text_content here
+col1, spacer, col2 = st.columns([5, 3, 5])
 
-if uploaded_file is not None:
-    # Preview the PDF
-    with open(uploaded_file.name, "wb") as f:
-        f.write(uploaded_file.getbuffer())
+
+with col1:
+    st.header("Upload your contract here!")
+    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+    text_content = ""  # Initialize text_content here
+
+    if uploaded_file is not None:
+        with open(uploaded_file.name, "wb") as f:
+            f.write(uploaded_file.getbuffer())
         
-    st.markdown(f"### Preview: {uploaded_file.name}", unsafe_allow_html=True)
-    st.markdown(
-        f'<iframe src="data:application/pdf;base64,{base64.b64encode(uploaded_file.getvalue()).decode()}" width="450" height="700" type="application/pdf"></iframe>',
-        unsafe_allow_html=True,
-    )
+        st.markdown(f"<h3 style='font-size:16px;'>Preview: {uploaded_file.name}</h3>", unsafe_allow_html=True)
+        st.markdown(
+            f'<iframe src="data:application/pdf;base64,{base64.b64encode(uploaded_file.getvalue()).decode()}" width="120%" height="800" type="application/pdf"></iframe>',
+            unsafe_allow_html=True,
+        )
 
-    encoded_content = base64.b64encode(uploaded_file.getvalue()).decode('utf-8')
-    
-    access_token = 'ya29.a0AfB_byDmLmU8gHT5rSG5kKxuiYPnVzB1brd7paD5MN9IGcSumCtKurYI4BN-GWxOias1Mr7sdycpr_L0d08XnB29Yv40x9L6tlyr6j5I1e-dhGsSWTP89g8YuLpSTQap_G5h9OyZMBIPZYiY7k1jykQICqVU7NKoNYc8NWXu2p8aCgYKAegSARISFQHGX2Mi3QTccITOAQYLQbNvzqp_7w0178'
-    text_content = get_document_text(encoded_content, access_token)  # Update text_content here
-    st.markdown("\n\n")
-    if st.button('Get Summary'):
-        openai_api_key = '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'
-        text_content = get_document_text(encoded_content, access_token)
-        if not text_content.startswith("Error:"):
+        encoded_content = base64.b64encode(uploaded_file.getvalue()).decode('utf-8')
+        access_token = 'ya29.a0AfB_byCMfJtgZBFQBeJPqvJVJ0It6M0kcNjnSobVrBRPzeQsk0P0cIYusyYf1LpAPHKSWtPCetIpAJRM7xtk3W5Yjg7VdRsmgnfH4NUNm9uFieYOTk_da10xHlxkmJZGZnFc3MCQsc8EDjji4fvuDV6H4_MWunZzXozsaCgYKAfUSARISFQHGX2MiIkJlF0_2M3KG8uixXPdGDg0171'
+        text_content = get_document_text(encoded_content, access_token)  # Update text_content here
+
+with spacer:
+    st.write("")
+
+with col2:
+
+    # Create a button to get the summary and check if the document is uploaded
+    if uploaded_file is not None and text_content and not text_content.startswith("Error:"):
+        if st.button('Get Contract Summary'):
             summary = get_summary(text_content)
             st.write(summary)
         else:
-            st.error(text_content) 
+            st.write("")  
 
 
-question = st.text_input("Ask a question based on the document:")
-if st.button('Get Answer'):
-    if not text_content.startswith("Error:"):
-        answer = get_answer(question, text_content)
-        st.write(answer)
+    st.header("Ask Me Anything!")
+    # Store the question in a variable
+    question = st.text_input("Ask a question based on your housing contract:")
+
+
+    # Create a button to get the answer and check if a question is entered
+    if uploaded_file is not None and text_content and not text_content.startswith("Error:") and question:
+        if st.button('Get Answer'):
+            answer = get_answer(question, text_content)
+            st.write(answer)
     else:
-        st.error("Please upload a document first.")
+        if not uploaded_file:
+            st.error("Please upload a document first.")
