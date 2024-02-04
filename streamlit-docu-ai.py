@@ -21,7 +21,7 @@ def get_document_text(encoded_content, access_token):
     })
 
     project_id = 'cwaipai'
-    access_token = 'ya29.a0AfB_byCMfJtgZBFQBeJPqvJVJ0It6M0kcNjnSobVrBRPzeQsk0P0cIYusyYf1LpAPHKSWtPCetIpAJRM7xtk3W5Yjg7VdRsmgnfH4NUNm9uFieYOTk_da10xHlxkmJZGZnFc3MCQsc8EDjji4fvuDV6H4_MWunZzXozsaCgYKAfUSARISFQHGX2MiIkJlF0_2M3KG8uixXPdGDg0171'
+    access_token = 'ya29.a0AfB_byBP9UcAGr-Y8ItZg_uwghu83fryxYu12nHcijlt7bqTuySCQSaKStvaBLSgasgrMsO4byN-t2o7MLFVlMd-skMU-ap4YEQzSvKP2uxjqEc6AvgxqGrQyEG6r0znNCANNFZr2x_zXZPCoa1_8HUUwExy33IXZiiWaCgYKAdMSARISFQHGX2Mi66-0Oqf82hpsc19iZQvCEw0171'
     endpoint_url = f"https://us-documentai.googleapis.com/v1/projects/450368740110/locations/us/processors/44657797e61c9b6b:process"
     headers = {
         "Authorization": f"Bearer {access_token}",
@@ -40,13 +40,11 @@ def get_document_text(encoded_content, access_token):
 
 def get_summary(text_content):
     try:
-        # Adjust this slicing to reduce the token count
-        trimmed_text_content = text_content[:1000]  # Adjust this value as needed
         messages = [
             {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": f"Please summarize the following text for me in 5-10 lines:\n\n{trimmed_text_content}"}
+            {"role": "user", "content": f"Please summarize the following housing contract for me in 5 bullet points:\n\n{text_content}"}
         ]
-        summary_response = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
+        summary_response = client.chat.completions.create(model="gpt-4-0125-preview", messages=messages)
         summary = summary_response.choices[0].message.content
         return summary
     except Exception as e:
@@ -54,24 +52,51 @@ def get_summary(text_content):
 
 def get_answer(question, text_content):
     try:
-        # Divide the text into segments
-        segments = segment_text(text_content, 800)  # Adjust the segment size as needed
+        messages = [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": f"Answer this question based on this housing contract:\n\n{question}\n\nContext:\n{text_content}"}
+        ]
+        answer_response = client.chat.completions.create(model="gpt-4-0125-preview", messages=messages)
+        answer = answer_response.choices[0].message.content
 
-        for segment in segments:
-            messages = [
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": f"Answer this question based on this housing contract:\n\n{question}\n\nContext:\n{segment}"}
-            ]
-            answer_response = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
-            answer = answer_response.choices[0].message.content
+        if "I don't know" not in answer and answer.strip():
+            return answer
+        else:
+            return "I couldn't find an answer in the document."
 
-            # Implement some basic logic to check if an answer is found
-            if "I don't know" not in answer and answer.strip():
-                return answer
-
-        return "I couldn't find an answer in the document."
     except Exception as e:
         return f"OpenAI Error: {str(e)}"
+
+# def get_answer(question, text_content):
+#     try:
+#         # Your Cloudflare AI Worker URL
+#         cloudflare_ai_url = "https://worker-purple-shape-6e9d.sohampatil-ai.workers.dev"
+
+#         payload = {
+#             "prompt": question,
+#             "context": text_content 
+#         }
+
+#         response = requests.post(cloudflare_ai_url, json=payload)
+
+#         if response.ok:
+#             response_data = response.json()
+#             print("Response Data:", response_data)  
+
+#             if isinstance(response_data, dict):
+#                 answer = response_data.get('answer', "I couldn't find an answer in the document.")
+#             elif isinstance(response_data, list):
+#                 answer = response_data[0].get('answer', "I couldn't find an answer in the document.") if response_data else "Empty response."
+#             else:
+#                 answer = "Unexpected response format."
+            
+#             return answer
+#         else:
+#             return f"Error: {response.status_code}, {response.text}"
+
+#     except Exception as e:
+#         return f"Cloudflare AI Error: {str(e)}"
+
 
 # Function to divide the text into smaller segments
 def segment_text(text, max_length):
@@ -105,11 +130,11 @@ with col1:
         )
 
         encoded_content = base64.b64encode(uploaded_file.getvalue()).decode('utf-8')
-        access_token = 'ya29.a0AfB_byCMfJtgZBFQBeJPqvJVJ0It6M0kcNjnSobVrBRPzeQsk0P0cIYusyYf1LpAPHKSWtPCetIpAJRM7xtk3W5Yjg7VdRsmgnfH4NUNm9uFieYOTk_da10xHlxkmJZGZnFc3MCQsc8EDjji4fvuDV6H4_MWunZzXozsaCgYKAfUSARISFQHGX2MiIkJlF0_2M3KG8uixXPdGDg0171'
+        access_token = 'ya29.a0AfB_byBP9UcAGr-Y8ItZg_uwghu83fryxYu12nHcijlt7bqTuySCQSaKStvaBLSgasgrMsO4byN-t2o7MLFVlMd-skMU-ap4YEQzSvKP2uxjqEc6AvgxqGrQyEG6r0znNCANNFZr2x_zXZPCoa1_8HUUwExy33IXZiiWaCgYKAdMSARISFQHGX2Mi66-0Oqf82hpsc19iZQvCEw0171'
         text_content = get_document_text(encoded_content, access_token)  # Update text_content here
 
-with spacer:
-    st.write("")
+# with spacer:
+#     st.write("")
 
 with col2:
 
