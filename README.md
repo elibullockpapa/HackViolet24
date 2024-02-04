@@ -6,8 +6,8 @@ RentRightly is a platform designed to demystify housing contracts for tenants an
 As college students, we have experienced how housing contracts can be very long, and it can take a long time to find the answer to a question like "will I be able to bring my pet?". That's why we created RentRightly - an interface for getting clarification about lease and rental agreements.
 
 # What it does
-For student renters - we use AI to help you summarize and chat with your contracts. Our Q&A interface can give you answers to specific questions about your contract 
-For landlords - use AI to find blind spots in your contracts that require clarification and to keep track of who has viewed or signed them.
+- For student renters - we use AI to help you summarize and chat with your contracts. Our Q&A interface can give you answers to specific questions about your contract 
+- For landlords - use AI to find blind spots in your contracts that require clarification and to keep track of who has viewed or signed them.
 
 # How we built it
 We use Google Cloud vertex AI to convert our PDF documents into OCR text. Then, we use the Cloudflare AI worker agents and OpenAI GPT-4 to summarize the document and let you ask questions about it. We used streamlit as it provides an easy user interface to host and build AI tools.
