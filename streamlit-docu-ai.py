@@ -21,7 +21,7 @@ def get_document_text(encoded_content, access_token):
     })
 
     project_id = 'cwaipai'
-    access_token = 'ya29.a0AfB_byCeGthCMdY9PS9bg-ugPKQZwy82l-QOX5KBx21v7Kg2YJOKqrXeSIwy-l7qmTGyoEo76dtciYkfX1-FEddjNwGC2HsvwzjX8eruMZhB52CXLF0iBoR95dDaSWHew68yI7VwncESAHdeBKwJP-ofGed_md8MfGhgiaCCqP4aCgYKAQASARISFQHGX2MidNmefXCmw0FkajXriMyAWQ0178'
+    access_token = 'ya29.a0AfB_byDmLmU8gHT5rSG5kKxuiYPnVzB1brd7paD5MN9IGcSumCtKurYI4BN-GWxOias1Mr7sdycpr_L0d08XnB29Yv40x9L6tlyr6j5I1e-dhGsSWTP89g8YuLpSTQap_G5h9OyZMBIPZYiY7k1jykQICqVU7NKoNYc8NWXu2p8aCgYKAegSARISFQHGX2Mi3QTccITOAQYLQbNvzqp_7w0178'
     endpoint_url = f"https://us-documentai.googleapis.com/v1/projects/450368740110/locations/us/processors/44657797e61c9b6b:process"
     headers = {
         "Authorization": f"Bearer {access_token}",
@@ -40,22 +40,55 @@ def get_document_text(encoded_content, access_token):
 
 def get_summary(text_content):
     try:
-        trimmed_text_content = text_content[:1000]
+        # Adjust this slicing to reduce the token count
+        trimmed_text_content = text_content[:1000]  # Adjust this value as needed
         messages = [
             {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": f"Please summarize the following text for me:\n\n{trimmed_text_content}"}
+            {"role": "user", "content": f"Please summarize the following text for me in 5-10 lines:\n\n{trimmed_text_content}"}
         ]
-        summary_response = client.chat.completions.create(model="gpt-3.5-turbo",  
-        messages=messages)
+        summary_response = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
         summary = summary_response.choices[0].message.content
         return summary
     except Exception as e:
         return f"OpenAI Error: {str(e)}"
 
+def get_answer(question, text_content):
+    try:
+        # Divide the text into segments
+        segments = segment_text(text_content, 800)  # Adjust the segment size as needed
+
+        for segment in segments:
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": f"Answer this question based on the text:\n\n{question}\n\nContext:\n{segment}"}
+            ]
+            answer_response = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
+            answer = answer_response.choices[0].message.content
+
+            # Implement some basic logic to check if an answer is found
+            if "I don't know" not in answer and answer.strip():
+                return answer
+
+        return "I couldn't find an answer in the document."
+    except Exception as e:
+        return f"OpenAI Error: {str(e)}"
+
+# Function to divide the text into smaller segments
+def segment_text(text, max_length):
+    segments = []
+    while text:
+        segment = text[:max_length].strip()
+        segments.append(segment)
+        text = text[len(segment):].strip()
+    return segments
+
+
 
 st.title('RentRightly')
 
 uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+text_content = ""  # Initialize text_content here
+
 if uploaded_file is not None:
     # Preview the PDF
     with open(uploaded_file.name, "wb") as f:
@@ -69,7 +102,8 @@ if uploaded_file is not None:
 
     encoded_content = base64.b64encode(uploaded_file.getvalue()).decode('utf-8')
     
-    access_token = 'ya29.a0AfB_byCeGthCMdY9PS9bg-ugPKQZwy82l-QOX5KBx21v7Kg2YJOKqrXeSIwy-l7qmTGyoEo76dtciYkfX1-FEddjNwGC2HsvwzjX8eruMZhB52CXLF0iBoR95dDaSWHew68yI7VwncESAHdeBKwJP-ofGed_md8MfGhgiaCCqP4aCgYKAQASARISFQHGX2MidNmefXCmw0FkajXriMyAWQ0178'
+    access_token = 'ya29.a0AfB_byDmLmU8gHT5rSG5kKxuiYPnVzB1brd7paD5MN9IGcSumCtKurYI4BN-GWxOias1Mr7sdycpr_L0d08XnB29Yv40x9L6tlyr6j5I1e-dhGsSWTP89g8YuLpSTQap_G5h9OyZMBIPZYiY7k1jykQICqVU7NKoNYc8NWXu2p8aCgYKAegSARISFQHGX2Mi3QTccITOAQYLQbNvzqp_7w0178'
+    text_content = get_document_text(encoded_content, access_token)  # Update text_content here
     st.markdown("\n\n")
     if st.button('Get Summary'):
         openai_api_key = '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'
@@ -79,3 +113,12 @@ if uploaded_file is not None:
             st.write(summary)
         else:
             st.error(text_content) 
+
+
+question = st.text_input("Ask a question based on the document:")
+if st.button('Get Answer'):
+    if not text_content.startswith("Error:"):
+        answer = get_answer(question, text_content)
+        st.write(answer)
+    else:
+        st.error("Please upload a document first.")
