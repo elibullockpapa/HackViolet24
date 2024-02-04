@@ -21,7 +21,7 @@ def get_document_text(encoded_content, access_token):
     })
 
     project_id = 'cwaipai'
-    access_token = 'ya29.a0AfB_byBP9UcAGr-Y8ItZg_uwghu83fryxYu12nHcijlt7bqTuySCQSaKStvaBLSgasgrMsO4byN-t2o7MLFVlMd-skMU-ap4YEQzSvKP2uxjqEc6AvgxqGrQyEG6r0znNCANNFZr2x_zXZPCoa1_8HUUwExy33IXZiiWaCgYKAdMSARISFQHGX2Mi66-0Oqf82hpsc19iZQvCEw0171'
+    access_token = 'ya29.a0AfB_byDeDaYiGf3kXhXj2bJpDbi4yqlLllJ8O7HzVN89UWBKWmQG6I0_LaDwTj7pOZUqQCdRHQ4F5x4HNAU4PM1bFRubr8moOU51isaMA04iZAy8cNOcWDV1bSyf5TNQ2g9vaTE4i1OUNTla4mHSDncJxCtKd3Yj0NFYkwaCgYKAWgSARISFQHGX2MiBiSQ_NBqG1rbxgqYxWJesw0173'
     endpoint_url = f"https://us-documentai.googleapis.com/v1/projects/450368740110/locations/us/processors/44657797e61c9b6b:process"
     headers = {
         "Authorization": f"Bearer {access_token}",
@@ -64,33 +64,33 @@ def get_answer(question, text_content):
     except Exception as e:
         return f"OpenAI Error: {str(e)}"
 
-# def get_answer(question, text_content):
-#     try:
-#         cloudflare_ai_url = "https://worker-purple-shape-6e9d.sohampatil-ai.workers.dev"
+def get_answer_1(question, text_content):
+    try:
+        cloudflare_ai_url = "https://worker-purple-shape-6e9d.sohampatil-ai.workers.dev"
 
-#         payload = {
-#             "prompt": question,
-#             "context": text_content 
-#         }
+        payload = {
+            "prompt": question,
+            "context": text_content 
+        }
 
-#         response = requests.post(cloudflare_ai_url, json=payload)
+        response = requests.post(cloudflare_ai_url, json=payload)
 
-#         # Check if the response is OK
-#         if response.ok:
-#             response_data = response.json()
+        # Check if the response is OK
+        if response.ok:
+            response_data = response.json()
 
-#             if isinstance(response_data, dict) and 'answer' in response_data:
-#                 answer = response_data['answer']
-#             else:
-#                 answer = "The response format is unexpected or an error occurred."
+            if isinstance(response_data, dict) and 'answer' in response_data:
+                answer = response_data['answer']
+            else:
+                answer = "The response format is unexpected or an error occurred."
             
-#             return answer
+            return answer
 
-#         else:
-#             return f"Error: {response.status_code}, {response.text}"
+        else:
+            return f"Error: {response.status_code}, {response.text}"
 
-#     except Exception as e:
-#         return f"Cloudflare AI Error: {str(e)}"
+    except Exception as e:
+        return f"Cloudflare AI Error: {str(e)}"
 
 
 st.set_page_config(layout="wide")
@@ -116,7 +116,7 @@ with col1:
         )
 
         encoded_content = base64.b64encode(uploaded_file.getvalue()).decode('utf-8')
-        access_token = 'ya29.a0AfB_byBP9UcAGr-Y8ItZg_uwghu83fryxYu12nHcijlt7bqTuySCQSaKStvaBLSgasgrMsO4byN-t2o7MLFVlMd-skMU-ap4YEQzSvKP2uxjqEc6AvgxqGrQyEG6r0znNCANNFZr2x_zXZPCoa1_8HUUwExy33IXZiiWaCgYKAdMSARISFQHGX2Mi66-0Oqf82hpsc19iZQvCEw0171'
+        access_token = 'ya29.a0AfB_byDeDaYiGf3kXhXj2bJpDbi4yqlLllJ8O7HzVN89UWBKWmQG6I0_LaDwTj7pOZUqQCdRHQ4F5x4HNAU4PM1bFRubr8moOU51isaMA04iZAy8cNOcWDV1bSyf5TNQ2g9vaTE4i1OUNTla4mHSDncJxCtKd3Yj0NFYkwaCgYKAWgSARISFQHGX2MiBiSQ_NBqG1rbxgqYxWJesw0173'
         text_content = get_document_text(encoded_content, access_token)  # Update text_content here
 
 # with spacer:
