@@ -95,7 +95,7 @@ def get_answer(question, text_content):
 
 st.set_page_config(layout="wide")
 
-st.title('RentRightly')
+st.markdown("<h1 style='font-size:70px;'>RentRightly 🏠</h1>", unsafe_allow_html=True)
 
 col1, spacer, col2 = st.columns([5, 3, 5])
 
