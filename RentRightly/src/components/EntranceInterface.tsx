@@ -10,6 +10,10 @@ function EntranceInterface() {
     navigate("/renter");
   };
 
+  const handleLandlordClick = () => {
+    navigate("/landlord");
+  };
+
   return (
     <Box
       sx={{
@@ -30,7 +34,7 @@ function EntranceInterface() {
         <Button variant="solid" color="primary" onClick={handleRenterClick}>
           Renter
         </Button>
-        <Button variant="solid" color="primary">
+        <Button variant="solid" color="primary" onClick={handleLandlordClick}>
           Landlord
         </Button>
       </Stack>
