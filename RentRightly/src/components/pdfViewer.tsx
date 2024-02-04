@@ -1,47 +1,52 @@
-import * as React from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import Tabs from '@mui/joy/Tabs';
 import TabList from '@mui/joy/TabList';
 import Tab from '@mui/joy/Tab';
 import Box from '@mui/joy/Box';
+import { useResizeObserver } from '@wojtekmaj/react-hooks';
 
-// PDF.js workerSrc configuration
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.js',
+    import.meta.url,
+).toString();
 
-export default function PDFViewerTabs() {
-    // State to track the number of pages in the loaded PDF document
-    const [numPages, setNumPages] = React.useState<number | null>(null);
+const options = {
+    cMapUrl: '/cmaps/',
+    standardFontDataUrl: '/standard_fonts/',
+};
 
-    // State to track the currently selected PDF file path
-    const [pdfFile, setPdfFile] = React.useState<string | null>(null);
+const maxWidth = 800;
 
-    // Handler when a PDF document is successfully loaded
-    function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-        // Update the state with the number of pages
-        setNumPages(numPages);
+const PDFViewerTabs: React.FC = () => {
+    const [numPages, setNumPages] = useState<number | null>(null);
+    const [pdfFile, setPdfFile] = useState<string | null>('/documents/ALight-Blacksburg-Community-Policies.pdf');
+    const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
+    const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined);
+
+    const onResize = useCallback((entries: ResizeObserverEntry[]) => {
+        const [entry] = entries;
+        setContainerWidth(entry.contentRect.width);
+    }, []);
+
+    useResizeObserver(containerRef, {}, onResize);
+
+    function onDocumentLoadSuccess({ numPages: loadedNumPages }: { numPages: number }) {
+        setNumPages(loadedNumPages);
     }
 
-    // Array of PDF file paths
     const pdfs = [
         '/documents/ALight-Blacksburg-Community-Policies.pdf',
+        '/documents/agreement.pdf',
         // ... add more PDF file paths as needed
     ];
 
-    // Set the first PDF as default if none is selected
-    React.useEffect(() => {
-        if (!pdfFile) {
-            setPdfFile(pdfs[0]);
-        }
-    }, [pdfFile, pdfs]);
-
     return (
         <Box sx={{ position: 'relative', height: '100vh' }}>
-            {/* Tabs component to switch between PDFs */}
             <Tabs
                 aria-label="PDF tabs"
                 value={pdfFile}
                 onChange={(event, newValue) => {
-                    // Ensure newValue is a string before updating state
                     if (typeof newValue === 'string') {
                         setPdfFile(newValue);
                     }
@@ -53,39 +58,29 @@ export default function PDFViewerTabs() {
                     zIndex: 1100,
                 }}
             >
-                {/* Tab list to render tabs for each PDF */}
                 <TabList variant="soft">
                     {pdfs.map((pdfPath) => (
                         <Tab key={pdfPath} value={pdfPath}>
-                            {`PDF ${pdfPath.split('/').pop()}`} {/* Display the file name */}
+                            {pdfPath.split('/').pop()}
                         </Tab>
                     ))}
                 </TabList>
             </Tabs>
-            {/* Container for the PDF document */}
-            <Box
-                sx={{
-                    overflowY: 'auto',
-                    maxHeight: 'calc(100vh - 48px)', // Adjust the height for the tab list
-                }}
-            >
-                {/* Render the PDF document */}
+            <div ref={setContainerRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 48px)' }}>
                 {pdfFile && (
-                    <Document
-                        file={pdfFile}
-                        onLoadSuccess={onDocumentLoadSuccess}
-                        options={{
-                            cMapUrl: 'cmaps/',
-                            cMapPacked: true,
-                        }}
-                    >
-                        {/* Render each page of the PDF */}
+                    <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess} options={options}>
                         {Array.from(new Array(numPages), (el, index) => (
-                            <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+                            <Page
+                                key={`page_${index + 1}`}
+                                pageNumber={index + 1}
+                                width={containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth}
+                            />
                         ))}
                     </Document>
                 )}
-            </Box>
+            </div>
         </Box>
     );
-}
+};
+
+export default PDFViewerTabs;
