@@ -54,22 +54,18 @@ def get_answer(question, text_content):
     try:
         messages = [
             {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": f"Answer this question based on this housing contract:\n\n{question}\n\nContext:\n{text_content}"}
+            {"role": "user", "content": f"Answer this question based on this housing contract in bullet points:\n\n{question}\n\nContext:\n{text_content}"}
         ]
         answer_response = client.chat.completions.create(model="gpt-4-0125-preview", messages=messages)
         answer = answer_response.choices[0].message.content
 
-        if "I don't know" not in answer and answer.strip():
-            return answer
-        else:
-            return "I couldn't find an answer in the document."
+        return answer
 
     except Exception as e:
         return f"OpenAI Error: {str(e)}"
 
 # def get_answer(question, text_content):
 #     try:
-#         # Your Cloudflare AI Worker URL
 #         cloudflare_ai_url = "https://worker-purple-shape-6e9d.sohampatil-ai.workers.dev"
 
 #         payload = {
@@ -79,33 +75,23 @@ def get_answer(question, text_content):
 
 #         response = requests.post(cloudflare_ai_url, json=payload)
 
+#         # Check if the response is OK
 #         if response.ok:
 #             response_data = response.json()
-#             print("Response Data:", response_data)  
 
-#             if isinstance(response_data, dict):
-#                 answer = response_data.get('answer', "I couldn't find an answer in the document.")
-#             elif isinstance(response_data, list):
-#                 answer = response_data[0].get('answer', "I couldn't find an answer in the document.") if response_data else "Empty response."
+#             if isinstance(response_data, dict) and 'answer' in response_data:
+#                 answer = response_data['answer']
 #             else:
-#                 answer = "Unexpected response format."
+#                 answer = "The response format is unexpected or an error occurred."
             
 #             return answer
+
 #         else:
 #             return f"Error: {response.status_code}, {response.text}"
 
 #     except Exception as e:
 #         return f"Cloudflare AI Error: {str(e)}"
 
-
-# Function to divide the text into smaller segments
-def segment_text(text, max_length):
-    segments = []
-    while text:
-        segment = text[:max_length].strip()
-        segments.append(segment)
-        text = text[len(segment):].strip()
-    return segments
 
 st.set_page_config(layout="wide")
 
@@ -153,8 +139,7 @@ with col2:
 
 
     # Create a button to get the answer and check if a question is entered
-    if uploaded_file is not None and text_content and not text_content.startswith("Error:") and question:
-        if st.button('Get Answer'):
+    if st.button('Get Answer'):
             answer = get_answer(question, text_content)
             st.write(answer)
     else:
