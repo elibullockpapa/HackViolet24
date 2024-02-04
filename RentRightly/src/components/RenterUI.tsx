@@ -26,6 +26,10 @@ function RenterUI() {
         background: 'linear-gradient(to bottom, rgba(0, 40, 225, 0.2), transparent)'
       }} />
 
+      <Typography level="h4" variant="outlined" color="primary" sx={{ position: 'absolute', top: 15, left: 25 }}>
+        RentRightly
+      </Typography>
+
       {/* Tabs for Profile and Offers */}
       <Box sx={{ width: '100%', position: 'sticky', top: '10%', bgcolor: 'background.default', zIndex: 1100 }}>
         <Tabs
@@ -44,7 +48,7 @@ function RenterUI() {
 
       {/* Tab Panel for Offers */}
       
-         <Box sx={{ position: 'absolute', top: '15%', left: '15%', transform: 'translateX(-50%)', p: 3 }}>
+         <Box sx={{ position: 'absolute', top: '15%', left: '12%', transform: 'translateX(-50%)', p: 3 }}>
           {/* Button for the Pending Offer */}
           <Sheet
             variant="outlined"
@@ -61,7 +65,7 @@ function RenterUI() {
             }}
             onClick={handleOfferClick}
           >
-            <Typography sx={{ mb: 1 }}>  {/* Margin at the bottom for spacing */}
+            <Typography variant="soft" textColor="warning.400" fontSize="lg" fontWeight="md" sx={{ mb: 1 }}>  {/* Margin at the bottom for spacing */}
               Pending Offer
             </Typography>
           </Sheet>

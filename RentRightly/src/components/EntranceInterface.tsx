@@ -20,8 +20,11 @@ function EntranceInterface() {
         height: '100vh',
       }}
     >
-      <Typography sx={{ position: 'absolute', top: 10, left: 10 }}>
+      <Typography level="h4" variant="outlined" color="primary" sx={{ position: 'absolute', top: 15, left: 25 }}>
         RentRightly
+      </Typography>
+      <Typography level="h1" sx={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+        Who are you?
       </Typography>
       <Stack direction="row" spacing={2}>
         <Button variant="solid" color="primary" onClick={handleRenterClick}>
